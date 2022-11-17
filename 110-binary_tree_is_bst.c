@@ -1,74 +1,37 @@
 #include "binary_trees.h"
-#include <limits.h>
-int find_min(const binary_tree_t *tree);
-int find_max(const binary_tree_t *tree);
 
 /**
- * binary_tree_is_bst - checks BST
- * @tree: node root
- * Return: 1 if true 0 if false
+ * binary_tree_is_bst - checks if a binary tree is a valid Binary Search Tree
+ * @tree: a pointer to the root node of the tree to check
+ *
+ * Return: 1 if tree is a valid BST
+ *         0 otherwise
  */
 int binary_tree_is_bst(const binary_tree_t *tree)
 {
-	int a, b;
-
 	if (!tree)
 		return (0);
-	a = find_max(tree->left);
-	b = find_min(tree->right);
-	if (tree->left)
-	{
-		if (a >= tree->n)
-			return (0);
-	}
-	if (tree->right)
-	{
-		if (b <= tree->n)
-			return (0);
-	}
-	return (1);
+	return (btib_helper(tree, INT_MIN, INT_MAX));
 }
 
 /**
- * find_max - max of the tree
- * @tree: root
- * Return: max
+ * btib_helper - checks if a binary tree is a valid Binary Search Tree
+ * @tree: a pointer to the root node of the tree to check
+ * @min: Lower bound of checked nored
+ * @max: Upper bound of checked nodes
+ *
+ * Return: 1 if tree is a valid BST
+ *         0 otherwise
  */
-
-int find_max(const binary_tree_t *tree)
+int btib_helper(const binary_tree_t *tree, int min, int max)
 {
-	int max, lmax, rmax;
+	if (!tree)
+		return (1);
 
-	if (tree == NULL)
-		return (INT_MIN);
-	max = tree->n;
-	lmax = find_max(tree->left);
-	rmax = find_max(tree->right);
-	if (lmax > max)
-		max = lmax;
-	if (rmax > max)
-		max = rmax;
-	return (max);
-}
+	if (tree->n < min || tree->n > max)
+		return (0);
 
-/**
- * find_min - min of the tree
- * @tree: root
- * Return: min
- */
-
-int find_min(const binary_tree_t *tree)
-{
-	int min, lmin, rmin;
-
-	if (tree == NULL)
-		return (INT_MAX);
-	min = tree->n;
-	lmin = find_min(tree->left);
-	rmin = find_min(tree->right);
-	if (lmin < min)
-		min = lmin;
-	if (rmin < min)
-		min = rmin;
-	return (min);
+	return (btib_helper(tree->left, min, tree->n - 1) &&
+		btib_helper(tree->right, tree->n + 1, max));
+	/* -1 and +1 stem from "There must be no duplicate values" req */
 }
